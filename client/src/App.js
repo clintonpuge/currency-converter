@@ -10,7 +10,9 @@ import Content from './components/Content.js';
 class App extends Component {
 
   state = {
-    currencies: []
+    currencies: [],
+    csvFormErr: false,
+    formErr: false,
   }
 
   componentDidMount() {
@@ -35,8 +37,10 @@ class App extends Component {
   onSubmit = () => {
     const { fromCurrency, toCurrency, amount } = this.state;
     // basic validation
-    if (fromCurrency !== '' && toCurrency !== '' && amount !== '') {
+    if (fromCurrency && toCurrency && amount) {
       this.props.onConvertCurrencies({ fromCurrency, toCurrency, amount });
+    } else {
+      this.setState({ formErr: true });
     }
   }
 
@@ -44,6 +48,8 @@ class App extends Component {
     const { amountForcsv, currencies, fromCurrencyForCsv } = this.state;
     if (amountForcsv && currencies && fromCurrencyForCsv) {
       this.props.onDownload({ currencies, amountForcsv, fromCurrencyForCsv });
+    } else {
+      this.setState({ csvFormErr: true });
     }
   }
   
@@ -54,12 +60,15 @@ class App extends Component {
       },
     }
     const { currencies, loading, total } = this.props;
+    const { csvFormErr, formErr } = this.state;
     return (
       <div className="App">
         <Header as='h1' content='A Currency Converter Application' style={style.h1} />
         <Content
           total={total}
           loading={loading}
+          csvFormErr={csvFormErr}
+          formErr={formErr}
           currencies={currencies}
           onSubmit={this.onSubmit}
           onDownload={this.onDownload}
