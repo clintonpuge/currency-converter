@@ -52,7 +52,7 @@ function* convertCurrenciesWorkerSaga(data) {
 function downloadCurrencies(amountForcsv, currencies, fromCurrencyForCsv) {
   const queryStr = currencies.join('&fields=');
   return window
-    .open(`${api_url}/converters/download?fields=${queryStr}&amount=${amountForcsv}&from=${fromCurrencyForCsv}`, '_self');
+    .open(`${api_url}/converters/download?fields=${queryStr}&amount=${amountForcsv}&from=${fromCurrencyForCsv}`);
 }
 
 function* downloadCurrenciesWorkerSaga(data) {

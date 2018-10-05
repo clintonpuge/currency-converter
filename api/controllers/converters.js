@@ -20,19 +20,25 @@ module.exports = {
     try {
       const { amount, fields, from } = req.query;
       
+      let fieldsParams = fields;
+
+      if (!Array.isArray(fields)) {
+        fieldsParams = [fields];
+      }
+
       // multiple async request
       const asyncCalls = [];
-      for (let i = 0; i < fields.length; i++) {
-        asyncCalls.push(axios.get(`${API_URL}?q=${from}_${fields[i]}`));
+      for (let i = 0; i < fieldsParams.length; i++) {
+        asyncCalls.push(axios.get(`${API_URL}?q=${from}_${fieldsParams[i]}`));
       }
 
       // mapped the content before save to csv
       const results = await Promise.all(asyncCalls);
       const datas =  mapMultiCurrencies(results.map(result => result.data.results), amount);
-      const headers = fields.map((field) => `${from}_${field}`);
-      const csv = json2csv(datas, { fields: headers } );
-      
+      const headers = fieldsParams.map((field) => `${from}_${field}`);
+
       // generate csv
+      const csv = json2csv(datas, { fields: headers } );
       res.setHeader('Content-disposition', 'attachment; filename=currencies.csv');
       res.set('Content-Type', 'text/csv');
       return res.status(201).send(csv);
